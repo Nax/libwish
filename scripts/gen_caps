@@ -1,0 +1,116 @@
+#!/usr/bin/env ruby
+
+##
+# gen_caps <caps.txt> <header output> <source output>
+#
+# Generate the header and source for terminfo caps.
+
+C_TYPES = {
+  :string   => 'char*',
+  :boolean  => 'int  ',
+  :number   => 'int  '
+}
+
+WARNING_COMMENT = %{/*\n * This file was automatically generated.\n * DO NOT EDIT.\n */\n}
+
+exit(1) unless ARGV.size == 3
+
+caps_path = ARGV.shift
+header_output = ARGV.shift
+source_output = ARGV.shift
+
+caps = []
+
+File.open(caps_path, 'r') do |file|
+  file.each do |line|
+    line = line.strip
+    next if line.empty? || line[0] == '#'
+
+    type, name = line.split
+    caps << [type.downcase.to_sym, name]
+  end
+end
+
+# Generate header
+header_data = StringIO.new
+header_data << %{#ifndef WISH_CAPS_H\n}
+header_data << %{#define WISH_CAPS_H\n}
+header_data << "\n"
+header_data << WARNING_COMMENT
+header_data << "\n"
+header_data << "struct wish_caps_s\n"
+header_data << "{\n"
+caps.each do |c|
+  type, name = *c
+  header_data << "    #{C_TYPES[type]} #{name};\n"
+end
+header_data << "};\n"
+header_data << "typedef struct wish_caps_s wish_caps;\n"
+header_data << "\n";
+header_data << "void wish_init_caps(wish_caps* caps);\n"
+header_data << "void wish_free_caps(wish_caps* caps);\n"
+header_data << "\n";
+header_data << "#endif\n"
+
+File.open(header_output, 'w') do |file|
+  file.write(header_data.string)
+end
+
+# Generate source
+source_data = StringIO.new
+source_data << %{#include <stdlib.h>\n}
+source_data << %{#include <string.h>\n}
+source_data << %{#include "wish_caps.h"\n}
+source_data << %{#include "wish_term.h"\n}
+source_data << "\n"
+source_data << WARNING_COMMENT
+source_data << "\n"
+source_data << "void wish_init_caps(wish_caps* caps)\n"
+source_data << "{\n"
+if caps.any?{|x| x[0] == :string}
+  source_data << "    char*  tmp;\n"
+  source_data << "    size_t size;\n"
+end
+caps.each do |cap|
+  type, name = *cap
+  case type
+  when :string
+    source_data << <<EOF
+    tmp = tigetstr("#{name}");
+    if (tmp != (char*)0 && tmp != (char*)-1)
+    {
+        size = strlen(tmp);
+        caps->#{name} = malloc(size + 1);
+        strcpy(caps->#{name}, tmp);
+    }
+    else
+        caps->#{name} = NULL;
+EOF
+  when :number
+    source_data << <<EOF
+    caps->#{name} = tigetnum("#{name}");
+    if (caps->#{name} == -2)
+        caps->#{name} = -1;
+EOF
+  when :boolean
+    source_data << <<EOF
+    caps->#{name} = tigetflag("#{name}");
+    if (caps->#{name} == -1)
+        caps->#{name} = 0;
+EOF
+  end
+end
+source_data << "}\n"
+source_data << "\n"
+source_data << "void wish_free_caps(wish_caps* caps)\n"
+source_data << "{\n"
+caps.each do |c|
+  type, name = *c
+  next unless type == :string
+  source_data << "    free(caps->#{name});\n"
+end
+source_data << "}\n"
+
+File.open(source_output, 'w') do |file|
+  file.write(source_data.string)
+end

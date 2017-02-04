@@ -1,0 +1,14 @@
+STRING  smcup
+STRING  rmcup
+STRING  clear
+STRING  setaf
+STRING  setab
+STRING  cup
+STRING  bold
+STRING  smul
+STRING  rmul
+STRING  smso
+STRING  rmso
+STRING  sgr0
+STRING  civis
+STRING  cnorm
