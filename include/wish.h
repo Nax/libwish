@@ -13,6 +13,7 @@
 
 #include <stdarg.h>
 #include <stdint.h>
+#include <stdlib.h>
 
 /*
  * C++ needs extern "C"
@@ -27,7 +28,7 @@
 
 #define WISH_VERSION_MAJOR  0
 #define WISH_VERSION_MINOR  1
-#define WISH_VERSION_PATCH  0
+#define WISH_VERSION_PATCH  1
 
 #define WISH_VERSION_HELPER(x,y,z)  ((x) * 10000 + (y) * 100 + (z))
 #define WISH_VERSION                WISH_VERSION_HELPER(WISH_VERSION_MAJOR, WISH_VERSION_MINOR, WISH_VERSION_PATCH)
