@@ -106,7 +106,7 @@ size_t wish_mvprintf(wish_view* view, int x, int y, const char* format, wish_att
     size_t size;
 
     va_start(ap, attr);
-    size = wish_mvprintf(view, x, y, format, attr, ap);
+    size = wish_mvvprintf(view, x, y, format, attr, ap);
     va_end(ap);
     return size;
 }
