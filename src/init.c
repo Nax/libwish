@@ -62,10 +62,9 @@ wish_term* wish_init(void)
     term->size.y = ws.ws_row;
 
     /* Allocate frames */
-    wish_frame_init(&term->frames[0], term->size.x, term->size.y);
-    wish_frame_init(&term->frames[1], term->size.x, term->size.y);
+    wish_frame_init(&term->frame, term->size.x, term->size.y);
+    wish_frame_init(&term->frame_old, term->size.x, term->size.y);
 
-    term->active_frame = 0;
     term->cursor.x = 0;
     term->cursor.y = 0;
     term->display_cursor = 1;
@@ -79,8 +78,8 @@ void wish_quit(wish_term* term)
     if (term)
     {
         /* Free the frames */
-        wish_frame_free(&term->frames[0]);
-        wish_frame_free(&term->frames[1]);
+        wish_frame_free(&term->frame);
+        wish_frame_free(&term->frame_old);
 
         /* Reset the old term */
         tcsetattr(1, TCSAFLUSH, &term->term_attr_backup);

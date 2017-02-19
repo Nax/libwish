@@ -23,8 +23,8 @@ void wish_draw(wish_term* term)
 {
     wish_unicode    u1, u2;
     wish_attr       a1, a2;
-    wish_frame*     active;
-    wish_frame*     old;
+    wish_frame*     frame;
+    wish_frame*     frame_old;
     wish_attr       attr = {0};
     int             in_draw;
     int             x;
@@ -37,18 +37,18 @@ void wish_draw(wish_term* term)
 
     in_draw = 0;
     wish_buffer_reset(&term->buffer);
-    active = &term->frames[term->active_frame];
-    old = &term->frames[1 - term->active_frame];
+    frame = &term->frame;
+    frame_old = &term->frame_old;
 
     wish_buffer_append_auto(&term->buffer, term->caps.sgr0);
     max = term->size.x * term->size.y;
 
     for (index = 0; index < max; ++index)
     {
-        u1 = active->ch[index];
-        u2 = old->ch[index];
-        a1 = active->attr[index];
-        a2 = old->attr[index];
+        u1 = frame->ch[index];
+        u2 = frame_old->ch[index];
+        a1 = frame->attr[index];
+        a2 = frame_old->attr[index];
 
         if (wish_cmp_chattr(u1, u2, a1, a2))
         {
@@ -124,7 +124,7 @@ void wish_draw(wish_term* term)
             }
 
             /* Here comes the display */
-            tmp_len = wish_utf8_encode(tmp, active->ch[index]);
+            tmp_len = wish_utf8_encode(tmp, frame->ch[index]);
             wish_buffer_append(&term->buffer, tmp, tmp_len);
         }
     }
@@ -146,5 +146,5 @@ void wish_draw(wish_term* term)
         wish_buffer_append_auto(&term->buffer, tparm(term->caps.cup, term->cursor.y, term->cursor.x));
 
     write(1, term->buffer.data, term->buffer.size);
-    term->active_frame = 1 - term->active_frame;
+    wish_frame_copy(frame_old, frame, term->size.x, term->size.y);
 }

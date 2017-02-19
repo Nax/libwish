@@ -22,8 +22,8 @@ struct wish_term_s
 {
     wish_caps       caps;
     wish_buffer     buffer;
-    wish_frame      frames[2];
-    int             active_frame;
+    wish_frame      frame;
+    wish_frame      frame_old;
     struct termios  term_attr;
     struct termios  term_attr_backup;
     wish_size       size;

@@ -24,6 +24,7 @@ typedef struct wish_frame_s wish_frame;
 
 void wish_frame_init(wish_frame* frame, int w, int h);
 void wish_frame_resize(wish_frame* frame, int w, int h);
+void wish_frame_copy(wish_frame* dst, wish_frame* src, int w, int h);
 void wish_frame_free(wish_frame* frame);
 
 #endif

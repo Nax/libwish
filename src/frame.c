@@ -22,8 +22,17 @@ void wish_frame_resize(wish_frame* frame, int w, int h)
     count_attr = count * sizeof(*frame->attr);
     frame->ch = realloc(frame->ch, count_ch);
     frame->attr = realloc(frame->attr, count_attr);
-    memset(frame->ch, 0, count_ch);
+    memset(frame->ch, ' ', count_ch);
     memset(frame->attr, 0, count_attr);
+}
+
+void wish_frame_copy(wish_frame* dst, wish_frame* src, int w, int h)
+{
+    size_t count;
+
+    count = w * h;
+    memcpy(dst->ch, src->ch, count * sizeof(*dst->ch));
+    memcpy(dst->attr, src->attr, count * sizeof(*dst->attr));
 }
 
 void wish_frame_free(wish_frame* frame)

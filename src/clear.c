@@ -5,8 +5,8 @@ void wish_clear(wish_term* term)
 {
     wish_frame* frame;
 
-    frame = &term->frames[term->active_frame];
-    memset(frame->ch, 0, term->size.x * term->size.y * sizeof(*frame->ch));
+    frame = &term->frame;
+    memset(frame->ch, ' ', term->size.x * term->size.y * sizeof(*frame->ch));
     memset(frame->attr, 0, term->size.x * term->size.y * sizeof(*frame->attr));
 }
 
@@ -27,7 +27,7 @@ void wish_clear_view(wish_view* view)
     if (len <= 0)
         return;
     y = 0;
-    frame = &view->term->frames[view->term->active_frame];
+    frame = &view->term->frame;
     w = view->term->size.x;
     for (;;)
     {
@@ -37,7 +37,7 @@ void wish_clear_view(wish_view* view)
         if (yoff >= view->term->size.y)
             return;
         index = w * yoff + offset;
-        memset(frame->ch + index, 0, len * sizeof(*frame->ch));
+        memset(frame->ch + index, ' ', len * sizeof(*frame->ch));
         memset(frame->attr + index, 0, len * sizeof(*frame->attr));
         y++;
     }

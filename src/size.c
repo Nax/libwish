@@ -10,8 +10,8 @@ int wish_resize(wish_term* term)
     {
         term->size.x = ws.ws_col;
         term->size.y = ws.ws_row;
-        wish_frame_resize(&term->frames[0], term->size.x, term->size.y);
-        wish_frame_resize(&term->frames[1], term->size.x, term->size.y);
+        wish_frame_resize(&term->frame, term->size.x, term->size.y);
+        wish_frame_resize(&term->frame_old, term->size.x, term->size.y);
         return 1;
     }
     return 0;

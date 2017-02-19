@@ -46,7 +46,7 @@ void wish_putchar(wish_view* view, wish_unicode ch, wish_attr attr)
             if (x < view->term->size.x && y < view->term->size.y)
             {
                 index = y * view->term->size.x + x;
-                frame = &view->term->frames[view->term->active_frame];
+                frame = &view->term->frame;
                 frame->ch[index] = ch;
                 frame->attr[index] = attr;
             }
