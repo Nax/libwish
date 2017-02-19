@@ -133,6 +133,7 @@ void            wish_read_delay(wish_term* term, int delay);
  */
 int     wish_resize(wish_term* term);
 void    wish_get_size(wish_term* term, wish_size* osize);
+void    wish_get_view_size(wish_view* view, wish_size* size);
 
 /*
  * unicode

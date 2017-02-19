@@ -6,13 +6,13 @@ static int wish_cmp_chattr(wish_unicode u1, wish_unicode u2, wish_attr a1, wish_
 {
     if (u1 != u2)
         return 0;
-    if (a1.color != a2.color)
-        return 0;
-    if (a1.bcolor != a2.bcolor)
-        return 0;
     if (a1.has_color != a2.has_color)
         return 0;
     if (a1.has_bcolor != a2.has_bcolor)
+        return 0;
+    if (a1.has_color && (a1.color != a2.color))
+        return 0;
+    if (a1.has_bcolor && (a1.bcolor != a2.bcolor))
         return 0;
     if (a1.flags != a2.flags)
         return 0;
@@ -50,6 +50,12 @@ void wish_draw(wish_term* term)
         a1 = frame->attr[index];
         a2 = frame_old->attr[index];
 
+        x = index % term->size.x;
+        y = index / term->size.x;
+
+        if (x == 0)
+            in_draw = 0;
+
         if (wish_cmp_chattr(u1, u2, a1, a2))
         {
             /* Nothing changed, no need to redraw this */
@@ -62,8 +68,6 @@ void wish_draw(wish_term* term)
             {
                 /* Not a drawing continuation, we must move the cursor */
                 in_draw = 1;
-                x = index % term->size.x;
-                y = index / term->size.x;
                 wish_buffer_append_auto(&term->buffer, tparm(term->caps.cup, y, x));
             }
 
@@ -85,13 +89,13 @@ void wish_draw(wish_term* term)
 
             /* Now that we have reset the style if needed, we need to check for flags to change */
             /* Let's start with color */
-            if (a1.has_color && (a1.color != attr.color))
+            if (a1.has_color && (a1.color != attr.color || !attr.has_color))
             {
                 wish_buffer_append_auto(&term->buffer, tparm(term->caps.setaf, a1.color));
                 attr.color = a1.color;
                 attr.has_color = 1;
             }
-            if (a1.has_bcolor && (a1.bcolor != attr.bcolor))
+            if (a1.has_bcolor && (a1.bcolor != attr.bcolor || !attr.has_bcolor))
             {
                 wish_buffer_append_auto(&term->buffer, tparm(term->caps.setab, a1.bcolor));
                 attr.bcolor = a1.bcolor;

@@ -4,10 +4,15 @@
 void wish_clear(wish_term* term)
 {
     wish_frame* frame;
+    wish_attr attr;
 
+    wish_attr_init(&attr);
     frame = &term->frame;
-    memset(frame->ch, ' ', term->size.x * term->size.y * sizeof(*frame->ch));
-    memset(frame->attr, 0, term->size.x * term->size.y * sizeof(*frame->attr));
+    for (size_t i = 0; i < term->size.x * term->size.y; ++i)
+    {
+        frame->ch[i] = ' ';
+        frame->attr[i] = attr;
+    }
 }
 
 void wish_clear_view(wish_view* view)
